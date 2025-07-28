@@ -24,6 +24,7 @@
 // 2. 模块会在接收到tx_start信号后，开始发送数据，发送完成后会产生发送完成信号tx_done
 // 3. 在每个发送状态下，均设置一计数器，用于在相同状态下的不同时刻发送不同数据帧
 // 4. 所有输入输出端口均先进行寄存
+//!5. 该模块输出tx_done信号总会在发送数据的最后一位时（即CRC32校验的最后一个字节）有效一周期，而非发送结束后的一周期内有效
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -51,7 +52,7 @@ module udp_send(
     output [11:0]    fifo_write_usage    // FIFO写入使用率
     );
 
-    // Step 1. 固定字段声明 Fixed Fields Declaration
+    //* Step 1. 固定字段声明 Fixed Fields Declaration
     reg tx_start;                                           // 发送启动信号，
                                                             // 由于该信号可能因为模块内部信号而改变，
                                                             // 因此不作为输入端口
@@ -69,7 +70,7 @@ module udp_send(
     parameter [7:0] IP_TTL = 8'h40;                         // IP生存时间，通常为64
     parameter [7:0] IP_PROTOCOL = 8'h11;                    // IP上层协议，UDP协议为17
 
-    // Step 2. 输入输出信号寄存 Input & Output Signal Register
+    //* Step 2. 输入输出信号寄存 Input & Output Signal Register
     reg [47:0] des_mac_reg;            // 6字节目的MAC地址输入寄存器
     reg [47:0] src_mac_reg;            // 6字节源MAC地址（FPGA地址）输入寄存器
     reg [15:0] des_udp_port_reg;       // 2字节目的UDP端口号输入寄存器
@@ -99,7 +100,7 @@ module udp_send(
         tx_done <= tx_done_reg;
     end
 
-    // Step 3. 实例化FIFO Instantiate FIFO for user data
+    //* Step 3. 实例化FIFO Instantiate FIFO for user data
     wire [7:0] fifo_read_data;      // FIFO读取数据
     reg fifo_read_request;          // FIFO读请求信号
     wire [11:0] fifo_read_usage;    // FIFO读取使用率
@@ -122,7 +123,7 @@ module udp_send(
         .rd_rst_busy    ()                      // FIFO读复位忙信号
     );
 
-    // Step 4. 对发送信号tx_start单独设置状态机 State Machine for tx_start Signal
+    //* Step 4. 对发送信号tx_start单独设置状态机 State Machine for tx_start Signal
     localparam [3:0] TX_START_IDLE = 4'b0001;          // 空闲状态
     localparam [3:0] TX_START_SEND = 4'b0010;          // 发送有效状态
     localparam [3:0] TX_START_WAIT = 4'b0100;          // 发送完成等待延时状态
@@ -166,7 +167,7 @@ module udp_send(
             endcase
         end
     
-    // Step 5. IP报头多路选择准备以及ip_checksum.v实例化 IP Checksum Module & IP Header Multiplexer
+    //* Step 5. IP报头多路选择准备以及ip_checksum.v实例化 IP Checksum Module & IP Header Multiplexer
     wire [15:0] ip_checksum;            // IP头部校验和结果
     reg [31:0] ip_header [4:0];         // IP头部寄存器数组，5个字寄存器
     wire [15:0] ip_total_length;        // IP头部总长度
@@ -202,7 +203,7 @@ module udp_send(
         .ip_checksum_result (ip_checksum)                // IP校验和结果输出
     );
 
-    // Step 6. UDP报头多路选择准备 UDP Header Multiplexer
+    //* Step 6. UDP报头多路选择准备 UDP Header Multiplexer
     reg [31:0] udp_header [1:0];         // UDP头部寄存器数组，2个字（8字节）寄存器
     wire [15:0] udp_total_length;        // UDP头部总长度
 
@@ -216,7 +217,7 @@ module udp_send(
         udp_header[1][15:0] <= 16'h0000;                  // UDP头部校验和，忽略
     end
 
-    // Step 7. CRC32校验模块实例化 CRC32 Checksum Module Instantiation
+    //* Step 7. CRC32校验模块实例化 CRC32 Checksum Module Instantiation
     wire crc_reset_n;                // CRC复位信号
     wire [31:0] crc_result;          // CRC校验结果
     reg crc_en;                      // CRC使能信号
@@ -229,11 +230,11 @@ module udp_send(
         .crc_en         (crc_en),            // CRC使能信号
         .crc_result     (crc_result)         // CRC校验结果输出
     );
-    // [Note] 该模块输入数据被按位反转，因此最终输出CRC32校验码会按字节反转
-    // 如果不希望校验码反转（目前还不是很清楚具体以太网到底要怎么传输）
-    // 只需要更改crc32_d8.v中的data_reversed赋值方式即可
+    //? 该模块输入数据被按位反转，因此最终输出CRC32校验码会按字节反转
+    //? 如果不希望校验码反转（目前还不是很清楚具体以太网到底要怎么传输）
+    //? 只需要更改crc32_d8.v中的data_reversed赋值方式即可
 
-    // Step 8. 状态机实现 State Machine Implementation
+    //* Step 8. 状态机实现 State Machine Implementation
     reg [9:0] send_state;             // 发送状态寄存器
 
     reg [2:0] cnt_mac_header;         // 发送MAC前导码（8字节）计数器
@@ -462,7 +463,7 @@ module udp_send(
             endcase
         end
 
-    // Step 9. GMII发送时钟输出 GMII Transmit Clock Output
+    //* Step 9. GMII发送时钟输出 GMII Transmit Clock Output
     assign gmii_tx_clk = clk_125m; // 直接使用模块工作时钟作为GMII发送时钟
 
 endmodule

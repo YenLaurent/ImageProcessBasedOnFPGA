@@ -26,7 +26,7 @@ module udp_send_tb(
 
     );
 
-    // Step 1: 输入输出端口及例化
+    //* Step 1: 输入输出端口及例化
     reg        clk_125m;            // 125MHz模块工作时钟信号
     reg        reset_n;             // 复位信号，低电平有效
 
@@ -80,7 +80,7 @@ module udp_send_tb(
         .fifo_write_usage  (fifo_write_usage)
     );
 
-    // Step 2: 时钟生成
+    //* Step 2: 时钟生成
     initial begin
         clk_125m <= 1'b1;
         forever #4 clk_125m <= !clk_125m; // 125 MHz clock
@@ -91,7 +91,7 @@ module udp_send_tb(
         forever #5 fifo_write_clk <= !fifo_write_clk; // 100 MHz clock for FIFO
     end
 
-    // Step 3: 激励生成
+    //* Step 3: 激励生成
     reg [4:0] fifo_write_cnt; // FIFO写入计数器
     reg fifo_write_ctrl;      // FIFO写入控制信号
                               // 该FIFO似乎会在fifo_write_request信号有效后的12拍才开始写入数据，
@@ -140,7 +140,7 @@ module udp_send_tb(
         end
     end
 
-    // Step 4: Simulation Starts
+    //* Step 4: Simulation Starts
     initial begin
         reset_n <= 1'b0;
         fifo_write_aclr <= 1'b1;
