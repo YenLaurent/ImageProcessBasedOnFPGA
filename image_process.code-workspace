@@ -1,16 +1,16 @@
 {
 	"folders": [
 		{
-			"name": "ImageProcess_Results",
-			"path": "../ImageProcess_Results"
-		},
-		{
 			"name": "ImageProcess.srcs",
 			"path": "."
+		},
+		{
+			"name": "ImageProcess_Results",
+			"path": "../ImageProcess_Results"
 		}
 	],
 	"settings": {
 		"commentTranslate.source": "Copilot",
-		"commentTranslate.hover.enabled": true
+		"commentTranslate.hover.enabled": false
 	}
 }
