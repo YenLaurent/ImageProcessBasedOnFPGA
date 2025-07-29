@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="gray_through_median_filter_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="gray_through_median_filter_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="400,174,988 ps"></ZoomStartTime>
+      <ZoomEndTime time="400,175,003 ps"></ZoomEndTime>
+      <Cursor1Time time="400,175,000 ps"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="113"></NameColumnWidth>
+      <ValueColumnWidth column_width="101"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="17" />
+   <wvobject fp_name="/gray_through_median_filter_tb/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/rst_p" type="logic">
+      <obj_property name="ElementShortName">rst_p</obj_property>
+      <obj_property name="ObjectShortName">rst_p</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/gray_valid" type="logic">
+      <obj_property name="ElementShortName">gray_valid</obj_property>
+      <obj_property name="ObjectShortName">gray_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/gray_hsync" type="logic">
+      <obj_property name="ElementShortName">gray_hsync</obj_property>
+      <obj_property name="ObjectShortName">gray_hsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/gray_vsync" type="logic">
+      <obj_property name="ElementShortName">gray_vsync</obj_property>
+      <obj_property name="ObjectShortName">gray_vsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/gray" type="array">
+      <obj_property name="ElementShortName">gray[7:0]</obj_property>
+      <obj_property name="ObjectShortName">gray[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/median_valid" type="logic">
+      <obj_property name="ElementShortName">median_valid</obj_property>
+      <obj_property name="ObjectShortName">median_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/median_hsync" type="logic">
+      <obj_property name="ElementShortName">median_hsync</obj_property>
+      <obj_property name="ObjectShortName">median_hsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/median_vsync" type="logic">
+      <obj_property name="ElementShortName">median_vsync</obj_property>
+      <obj_property name="ObjectShortName">median_vsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/median_out" type="array">
+      <obj_property name="ElementShortName">median_out[7:0]</obj_property>
+      <obj_property name="ObjectShortName">median_out[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/i" type="array">
+      <obj_property name="ElementShortName">i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/error_count" type="array">
+      <obj_property name="ElementShortName">error_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">error_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/DATA_WIDTH" type="array">
+      <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/WIDTH" type="array">
+      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/HEIGHT" type="array">
+      <obj_property name="ElementShortName">HEIGHT[31:0]</obj_property>
+      <obj_property name="ObjectShortName">HEIGHT[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/gray_input_file" type="array">
+      <obj_property name="ElementShortName">gray_input_file[119:0]</obj_property>
+      <obj_property name="ObjectShortName">gray_input_file[119:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/gray_through_median_filter_tb/median_output_file" type="array">
+      <obj_property name="ElementShortName">median_output_file[135:0]</obj_property>
+      <obj_property name="ObjectShortName">median_output_file[135:0]</obj_property>
+   </wvobject>
+</wave_config>

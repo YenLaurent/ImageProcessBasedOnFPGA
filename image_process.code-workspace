@@ -3,10 +3,6 @@
 		{
 			"name": "ImageProcess.srcs",
 			"path": "."
-		},
-		{
-			"name": "ImageProcess_Results",
-			"path": "../ImageProcess_Results"
 		}
 	],
 	"settings": {
