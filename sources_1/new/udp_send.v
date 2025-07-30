@@ -280,7 +280,7 @@ module udp_send(
             tx_done_reg <= 1'b0;                            // 发送完成信号清零
             crc_en <= 1'b0;                                 // CRC使能信号清零
         end
-        else begin
+        else
             case (send_state)
                 IDLE: begin
                     gmii_tx_en_reg <= 1'b0;                 // 在空闲状态下，GMII发送使能信号清零
@@ -461,7 +461,6 @@ module udp_send(
 
                 default: send_state <= IDLE; // 默认状态为IDLE，防止状态机进入未知状态
             endcase
-        end
 
     //* Step 9. GMII发送时钟输出 GMII Transmit Clock Output
     assign gmii_tx_clk = clk_125m; // 直接使用模块工作时钟作为GMII发送时钟
