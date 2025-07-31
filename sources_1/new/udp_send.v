@@ -25,6 +25,8 @@
 // 3. 在每个发送状态下，均设置一计数器，用于在相同状态下的不同时刻发送不同数据帧
 // 4. 所有输入输出端口均先进行寄存
 //!5. 该模块输出tx_done信号总会在发送数据的最后一位时（即CRC32校验的最后一个字节）有效一周期，而非发送结束后的一周期内有效
+//!   此外，tx_done信号仅仅指示gmii_txd数据发送完毕，
+//!   如果该模块经过gmii2rgmii.v模块转换为RGMII接口，那么tx_done信号会比实际的rgmii_txd信号早一拍结束
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -104,6 +106,10 @@ module udp_send(
     wire [7:0] fifo_read_data;      // FIFO读取数据
     reg fifo_read_request;          // FIFO读请求信号
     wire [11:0] fifo_read_usage;    // FIFO读取使用率
+    wire fifo_full;                 // FIFO满信号
+    wire fifo_empty;                // FIFO空信号
+    wire fifo_rd_rst_busy;          // FIFO读复位忙信号
+    wire fifo_wr_rst_busy;          // FIFO写复位忙信号
 
     ethernet_dcfifo ethernet_dcfifo_inst(
         // input
@@ -115,12 +121,12 @@ module udp_send(
         .rd_en          (fifo_read_request),    // FIFO读请求信号
         // output
         .dout           (fifo_read_data),       // FIFO读取数据
-        .full           (),                     // FIFO满信号
-        .empty          (),                     // FIFO空信号
+        .full           (fifo_full),            // FIFO满信号
+        .empty          (fifo_empty),           // FIFO空信号
         .rd_data_count  (fifo_read_usage),      // FIFO读取使用率
         .wr_data_count  (fifo_write_usage),     // FIFO写入使用率
-        .wr_rst_busy    (),                     // FIFO写复位忙信号
-        .rd_rst_busy    ()                      // FIFO读复位忙信号
+        .wr_rst_busy    (fifo_wr_rst_busy),     // FIFO写复位忙信号
+        .rd_rst_busy    (fifo_rd_rst_busy)      // FIFO读复位忙信号
     );
 
     //* Step 4. 对发送信号tx_start单独设置状态机 State Machine for tx_start Signal

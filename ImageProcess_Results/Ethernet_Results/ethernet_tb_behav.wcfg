@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="ethernet_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="ethernet_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="14,411.869 ns"></ZoomStartTime>
+      <ZoomEndTime time="14,806.470 ns"></ZoomEndTime>
+      <Cursor1Time time="14,420.100 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="181"></NameColumnWidth>
+      <ValueColumnWidth column_width="85"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="23" />
+   <wvobject fp_name="/ethernet_tb/clk_100mhz" type="logic">
+      <obj_property name="ElementShortName">clk_100mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_100mhz</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/clk_125mhz" type="logic">
+      <obj_property name="ElementShortName">clk_125mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/clk_50mhz" type="logic">
+      <obj_property name="ElementShortName">clk_50mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_50mhz</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/valid" type="logic">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/hsync" type="logic">
+      <obj_property name="ElementShortName">hsync</obj_property>
+      <obj_property name="ObjectShortName">hsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/vsync" type="logic">
+      <obj_property name="ElementShortName">vsync</obj_property>
+      <obj_property name="ObjectShortName">vsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/sobel" type="logic">
+      <obj_property name="ElementShortName">sobel</obj_property>
+      <obj_property name="ObjectShortName">sobel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/rgmii_txd" type="array">
+      <obj_property name="ElementShortName">rgmii_txd[3:0]</obj_property>
+      <obj_property name="ObjectShortName">rgmii_txd[3:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/rgmii_tx_clk" type="logic">
+      <obj_property name="ElementShortName">rgmii_tx_clk</obj_property>
+      <obj_property name="ObjectShortName">rgmii_tx_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/rgmii_tx_ctl" type="logic">
+      <obj_property name="ElementShortName">rgmii_tx_ctl</obj_property>
+      <obj_property name="ObjectShortName">rgmii_tx_ctl</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/tx_done" type="logic">
+      <obj_property name="ElementShortName">tx_done</obj_property>
+      <obj_property name="ObjectShortName">tx_done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/fifo_write_usage" type="array">
+      <obj_property name="ElementShortName">fifo_write_usage[11:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_write_usage[11:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/fifo_write_req" type="logic">
+      <obj_property name="ElementShortName">fifo_write_req</obj_property>
+      <obj_property name="ObjectShortName">fifo_write_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_write_data" type="array">
+      <obj_property name="ElementShortName">fifo_write_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_write_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_read_usage" type="array">
+      <obj_property name="ElementShortName">fifo_read_usage[11:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_read_usage[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_read_request" type="logic">
+      <obj_property name="ElementShortName">fifo_read_request</obj_property>
+      <obj_property name="ObjectShortName">fifo_read_request</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_read_data" type="array">
+      <obj_property name="ElementShortName">fifo_read_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_read_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/fifo_aclr" type="logic">
+      <obj_property name="ElementShortName">fifo_aclr</obj_property>
+      <obj_property name="ObjectShortName">fifo_aclr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_full" type="logic">
+      <obj_property name="ElementShortName">fifo_full</obj_property>
+      <obj_property name="ObjectShortName">fifo_full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_empty" type="logic">
+      <obj_property name="ElementShortName">fifo_empty</obj_property>
+      <obj_property name="ObjectShortName">fifo_empty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_rd_rst_busy" type="logic">
+      <obj_property name="ElementShortName">fifo_rd_rst_busy</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_rst_busy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ethernet_tb/ethernet_inst/udp_send_inst/fifo_wr_rst_busy" type="logic">
+      <obj_property name="ElementShortName">fifo_wr_rst_busy</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_rst_busy</obj_property>
+   </wvobject>
+</wave_config>
