@@ -37,8 +37,8 @@ module ethernet #(
     parameter [15:0] SRC_UDP_PORT = 16'd5000,           // 源UDP端口号，默认为5000
     parameter [15:0] DATA_LENGTH = IMAGE_WIDTH / 8 + 2  // 用户单帧数据长度（不包含任何报头）
     )(
-    input clk_pixel,            // 像素时钟，100MHz
-    input clk_eth,              // 以太网时钟，125MHz
+    input clk_pixel,            //*像素时钟，由OV5640提供，但需分频
+    input clk_eth,              // 以太网发送时钟，125MHz
     input clk_phy,              // PHY配置时钟，50MHz
     input rst_n,                // 复位信号，低电平有效
     input valid,                // 输入数据有效标志

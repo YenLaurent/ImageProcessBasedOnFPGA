@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module DVP_tb();
+module dvp_tb();
 reg rst_p;
 reg pclk;
 reg vsync;
