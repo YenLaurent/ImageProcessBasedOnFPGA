@@ -54,9 +54,9 @@ module sobel #(
     reg [DATA_WIDTH-1:0] row1_col0, row1_col1, row1_col2;  // <<----line1_data 上一行数据
     reg [DATA_WIDTH-1:0] row2_col0, row2_col1, row2_col2;  // <<----line2_data 当前行数据
     // Control signal's shift register
-    reg [2:0] median_valid_reg;
-    reg [2:0] median_hsync_reg;
-    reg [2:0] median_vsync_reg;
+    (* dont_touch = "true" *) reg [2:0] median_valid_reg;
+    (* dont_touch = "true" *) reg [2:0] median_hsync_reg;
+    (* dont_touch = "true" *) reg [2:0] median_vsync_reg;
     // Convolution signal
     wire Gx_is_positive;    // Gx卷积结果正负，便于后续取绝对值操作
     wire Gy_is_positive;    // Gy卷积结果正负

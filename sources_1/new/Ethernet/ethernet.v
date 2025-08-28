@@ -49,7 +49,6 @@ module ethernet #(
     output [3:0] rgmii_txd,     // RGMII发送数据线
     output rgmii_tx_clk,        // RGMII发送时钟
     output rgmii_tx_ctl,        // RGMII发送控制信号
-    output phy_rst_n,           // PHY复位信号
     output phy_config_done,     // PHY配置完成标志
     output [15:0] phy_read_data,// 读取的寄存器数据
     output mdc,                 // MDC时钟信号
@@ -130,7 +129,6 @@ module ethernet #(
         .clk            (clk_phy),
         .rst_n          (1'b0),         //* 可将此处置零以停用配置模块
         // outputs
-        .phy_rst_n      (phy_rst_n),
         .read_data      (phy_read_data),
         .phy_config_done(phy_config_done),
         .mdc            (mdc),

@@ -30,7 +30,6 @@ module phy_reg_config #(
     input clk,                          // 模块系统时钟
     input rst_n,                        // 复位信号，低电平有效
 
-    output phy_rst_n,                   // PHY复位信号
     output [15:0] read_data,            // 读取的寄存器数据
     output phy_config_done,             // PHY初始化完成标志
     output reg mdc = 1'b0,              // MDC时钟信号（初始化以仿真）
@@ -38,6 +37,7 @@ module phy_reg_config #(
     );
 
     //* Step 1: 例化mdio_transmit模块
+    wire phy_rst_n;                     // PHY复位信号
     wire [4:0] reg_addr;
     wire [15:0] write_data;
     reg start;
@@ -123,8 +123,10 @@ module phy_reg_config #(
     reg [15:0] div_cnt; // 分频计数器，用于生成MDC时钟
     
     always @(posedge clk or negedge rst_n)
-        if (!rst_n)
+        if (!rst_n) begin
             div_cnt <= 16'd0;
+            mdc <= 1'b0;
+        end
         else if (div_cnt >= (MODULE_CLK / MDC_CLK) / 2 - 1) begin // 根据MDC_CLK生成MDC时钟
             div_cnt <= 16'd0;
             mdc <= ~mdc;

@@ -31,7 +31,6 @@ module ip_checksum(
     input [12:0] fragment_offset,       // 分段偏移
     input [7:0] ttl,                    // 生存时间
     input [7:0] protocol,               // 上层协议
-    input [15:0] header_checksum,       // 头部校验和，初始默认为0，不参与计算
     input [31:0] source_ip,             // 源IP地址
     input [31:0] dest_ip,               // 目的IP地址
 

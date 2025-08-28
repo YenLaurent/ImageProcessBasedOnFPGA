@@ -16,7 +16,8 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+// 1. 系统复位信号rst_n约束至开发板S4按键
+// 2. PHY配置完成标志phy_config_done约束至开发板LED0
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -39,7 +40,7 @@ module ImageProcess #(
     )(
     input clk_sys,              // 系统50MHz晶振时钟
     input clk_pixel,            // 由OV5640提供的像素时钟
-    input rst_p,                // 系统复位信号，高电平有效
+    input rst_n,                // 系统复位信号，低电平有效
     // OV5640 Camera Interface
     inout camera_sdat,			// IIC数据
 	input camera_vsync,         // 场同步信号
@@ -53,9 +54,7 @@ module ImageProcess #(
     output [3:0] rgmii_txd,     // RGMII发送数据线
     output rgmii_tx_clk,        // RGMII发送时钟
     output rgmii_tx_ctl,        // RGMII发送控制信号
-    output phy_rst_n,           // PHY复位信号
     output phy_config_done,     // PHY配置完成标志
-    output [15:0] phy_read_data,// 读取的寄存器数据
     output mdc,                 // MDC时钟信号
     inout mdio                  // MDIO数据线
     );
@@ -72,7 +71,7 @@ module ImageProcess #(
     .clk_50m    (clk_50m),      // output clk_50m
     .clk_24m    (clk_24m),      // output clk_24m
     // Status and control signals
-    .reset      (rst_p),        // input reset
+    .reset      (!rst_n),       // input reset
     .locked     (locked),       // output locked
     // Clock in ports
     .clk_sys    (clk_sys)       // input clk_sys
@@ -93,7 +92,7 @@ module ImageProcess #(
         // inputs
         .clk_50m            (clk_50m),
         .clk_24m            (clk_24m),
-        .reset_p            (rst_p),
+        .reset_p            (!rst_n),
         .camera1_sdat       (camera_sdat),
         .camera1_vsync      (camera_vsync),
         .camera1_href       (camera_href),
@@ -135,7 +134,7 @@ module ImageProcess #(
     ) image_process_top(
         // inputs
         .clk            (clk_pixel_division),       // 像素时钟，二分频
-        .rst_p          (rst_p),                    // 复位信号，高电平有效
+        .rst_p          (!rst_n),                   // 复位信号，高电平有效
         .rgb_valid      (rgb_valid),                // 输入RGB信号有效标志
         .rgb_hsync      (rgb_hsync),                // 输入RGB信号的行同步信号
         .rgb_vsync      (rgb_vsync),                // 输入RGB信号的场同步信号
@@ -166,7 +165,7 @@ module ImageProcess #(
         .clk_pixel      (clk_pixel_division),   // 像素时钟，二分频
         .clk_eth        (clk_125m),             // 以太网发送125MHz时钟
         .clk_phy        (clk_50m),              // PHY配置时钟，50MHz
-        .rst_n          (!rst_p),               // 复位信号，低电平有效
+        .rst_n          (rst_n),                // 复位信号，低电平有效
         .valid          (sobel_valid),
         .hsync          (sobel_hsync),
         .vsync          (sobel_vsync),
@@ -175,9 +174,8 @@ module ImageProcess #(
         .rgmii_txd      (rgmii_txd),
         .rgmii_tx_clk   (rgmii_tx_clk),
         .rgmii_tx_ctl   (rgmii_tx_ctl),
-        .phy_rst_n      (phy_rst_n),
-        .phy_config_done(phy_config_done),
-        .phy_read_data  (phy_read_data),
+        .phy_config_done(phy_config_done),      // PHY配置完成标志
+        .phy_read_data  (),                     // 读到的PHY数据，暂时未接
         .mdc            (mdc),
         .mdio           (mdio)
     );

@@ -203,7 +203,6 @@ module udp_send(
         .fragment_offset    (IP_FRAGMENT_OFFSET),        // 分段偏移
         .ttl                (IP_TTL),                    // 生存时间
         .protocol           (IP_PROTOCOL),               // 上层协议
-        .header_checksum    (16'h0000),                  // 头部校验和
         .source_ip          (src_ip_reg),                // 源IP地址
         .dest_ip            (des_ip_reg),                // 目的IP地址
         .ip_checksum_result (ip_checksum)                // IP校验和结果输出

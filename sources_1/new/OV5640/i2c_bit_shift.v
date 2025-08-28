@@ -23,23 +23,23 @@ module i2c_bit_shift(
   output reg i2c_sclk;
   inout i2c_sdat;
 
-  //ÏµÍ³Ê±ÖÓ²ÉÓÃ50MHz
+  //ÏµÍ³Ê±ï¿½Ó²ï¿½ï¿½ï¿½50MHz
   parameter SYS_CLOCK = 50_000_000;
-  //SCL×ÜÏßÊ±ÖÓ²ÉÓÃ400kHz
+  //SCLï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ó²ï¿½ï¿½ï¿½400kHz
   parameter SCL_CLOCK = 400_000;
-  //²úÉúÊ±ÖÓSCL¼ÆÊýÆ÷×î´óÖµ
+  //ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½SCLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
   localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
 
   reg i2c_sdat_oe;
   reg i2c_sdat_o;
 
   localparam 
-    WR   = 6'b000001,   //Ð´ÇëÇó
-    STA  = 6'b000010,   //ÆðÊ¼Î»ÇëÇó
-    RD   = 6'b000100,   //¶ÁÇëÇó
-    STO  = 6'b001000,   //Í£Ö¹Î»ÇëÇó
-    ACK  = 6'b010000,   //Ó¦´ðÎ»ÇëÇó
-    NACK = 6'b100000;   //ÎÞÓ¦´ðÇëÇó
+    WR   = 6'b000001,   //Ð´ï¿½ï¿½ï¿½ï¿½
+    STA  = 6'b000010,   //ï¿½ï¿½Ê¼Î»ï¿½ï¿½ï¿½ï¿½
+    RD   = 6'b000100,   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    STO  = 6'b001000,   //Í£Ö¹Î»ï¿½ï¿½ï¿½ï¿½
+    ACK  = 6'b010000,   //Ó¦ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
+    NACK = 6'b100000;   //ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
   reg [19:0]div_cnt;
   reg en_div_cnt;
@@ -82,6 +82,7 @@ module i2c_bit_shift(
     ack_o <= 0;
     state <= IDLE;
     cnt <= 0;
+    i2c_sclk <= 0;
   end
   else begin
     case(state)

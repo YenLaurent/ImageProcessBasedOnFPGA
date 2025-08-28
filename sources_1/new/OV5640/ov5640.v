@@ -1,27 +1,27 @@
 module ov5640 #(
-	parameter IMAGE_WIDTH  = 1280,	// Í¼Ïñ¿í¶È
-	parameter IMAGE_HEIGHT = 720	// Í¼Ïñ³¤¶È
+	parameter IMAGE_WIDTH  = 1280,	// Í¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	parameter IMAGE_HEIGHT = 720	// Í¼ï¿½ñ³¤¶ï¿½
 	)(
 	// Clock & Reset
-	input clk_50m,				// ÓÃÓÚIIC³õÊ¼»¯µÄ50MHzÊ±ÖÓ
-	input clk_24m,				// ÓÃÓÚÉãÏñÍ·Çý¶¯µÄ24MHzÊ±ÖÓ
-	input reset_p,              // ¸´Î»ÐÅºÅÊäÈë
+	input clk_50m,				// ï¿½ï¿½ï¿½ï¿½IICï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½50MHzÊ±ï¿½ï¿½
+	input clk_24m,				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½24MHzÊ±ï¿½ï¿½
+	input reset_p,              // ï¿½ï¿½Î»ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½
 	// Camera 1 Interface
-	inout camera1_sdat,			// IICÊý¾Ý
+	inout camera1_sdat,			// IICï¿½ï¿½ï¿½ï¿½
 	input camera1_vsync,
 	input camera1_href,
-	input camera1_pclk,			// Resolution: 1280x720£¬ÏñËØÊ±ÖÓÎª74.25MHz£¬ÓÉOV5640Ìá¹©
-	input [7:0] camera1_data,	// OV5640ÊäÈëÊý¾Ý
+	input camera1_pclk,			// Resolution: 1280x720ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Îª74.25MHzï¿½ï¿½ï¿½ï¿½OV5640ï¿½á¹©
+	input [7:0] camera1_data,	// OV5640ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	output camera1_xclk,		// ÉãÏñÍ·Çý¶¯Ê±ÖÓ
-	output camera1_sclk,		// IICÊ±ÖÓ
-	output camera1_rst_n,		// ÉãÏñÍ·¸´Î»
+	output camera1_xclk,		// ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+	output camera1_sclk,		// IICÊ±ï¿½ï¿½
+	output camera1_rst_n,		// ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Î»
 	output [7:0] red_8b,		// rgb888_red
 	output [7:0] green_8b,		// rgb888_green
 	output [7:0] blue_8b,		// rgb888_blue
-	output image1_data_valid,	// Êý¾ÝÓÐÐ§ÐÅºÅ
-	output image1_data_hs,		// ÐÐÍ¬²½ÐÅºÅ
-	output image1_data_vs		// Ö¡Í¬²½ÐÅºÅ
+	output image1_data_valid,	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Åºï¿½
+	output image1_data_hs,		// ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Åºï¿½
+	output image1_data_vs		// Ö¡Í¬ï¿½ï¿½ï¿½Åºï¿½
 	);
 
 	//* Internal Connect
@@ -33,10 +33,10 @@ module ov5640 #(
 	assign camera1_xclk = clk_24m;
 	
 	camera_init #(
-		.IMAGE_WIDTH 	(IMAGE_WIDTH/2),	// Í¼Æ¬¿í¶È
-		.IMAGE_HEIGHT	(IMAGE_HEIGHT),		// Í¼Æ¬¸ß¶È
-		.IMAGE_FLIP_EN  (0),				// 0: ²»·­×ª£¬1: ÉÏÏÂ·­×ª
-		.IMAGE_MIRROR_EN(0) 				// 0: ²»¾µÏñ£¬1: ×óÓÒ¾µÏñ
+		.IMAGE_WIDTH 	(IMAGE_WIDTH/2),	// Í¼Æ¬ï¿½ï¿½ï¿½ï¿½
+		.IMAGE_HEIGHT	(IMAGE_HEIGHT),		// Í¼Æ¬ï¿½ß¶ï¿½
+		.IMAGE_FLIP_EN  (0),				// 0: ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½1: ï¿½ï¿½ï¿½Â·ï¿½×ª
+		.IMAGE_MIRROR_EN(0) 				// 0: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1: ï¿½ï¿½ï¿½Ò¾ï¿½ï¿½ï¿½
 	) camera1_init(
 		.Clk         	(clk_50m),
 		.Rst_p       	(reset_p),
@@ -47,6 +47,7 @@ module ov5640 #(
 		.i2c_sdat    	(camera1_sdat)
 	);
 	
+	//TODO: Implementationæ˜¾ç¤ºBUFGä¸ŽIOé å¾—è¿‡è¿‘ï¼Œå› æ­¤æŠ¥é”™ï¼Œå¯è€ƒè™‘å¿½ç•¥æŠ¥é”™ï¼ˆä¿®æ”¹çº¦æŸæ–‡ä»¶ï¼‰æˆ–åˆ é™¤BUFG
 	BUFG BUFG_inst1 (
 		.O	(pclk1_bufg_o), 	// 1-bit output: Clock output
 		.I	(camera1_pclk)  	// 1-bit input: Clock input
@@ -61,7 +62,6 @@ module ov5640 #(
 		.Href       (camera1_href),			// input
 		.Data       (camera1_data),			// input     [7:0]
 
-		.ImageState (),
 		.DataValid  (image1_data_valid),	// output
 		.DataPixel  (image1_data),			// output    [15:0]
 		.DataHs     (image1_data_hs),		// output
@@ -70,12 +70,12 @@ module ov5640 #(
 		.Yaddr      () 						// output    [11:0]
 	);
 
-	assign image1_data_vs = !image1_data_vs_reg;  	//* ÕâÀïÈ¡·´ÒÔÊÊÓ¦ºóÐøÍ¼ÏñÂË²¨µÄÂß¼­
+	assign image1_data_vs = !image1_data_vs_reg;  	//* ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
 
 	assign red_8b = {image1_data[15:11], 3'b000};	// rgb565 -> rgb888
 	assign green_8b = {image1_data[10:5], 2'b00};	// rgb565 -> rgb888
 	assign blue_8b = {image1_data[4:0], 3'b000};	// rgb565 -> rgb888
-	//? Õâ²¿·Ö×ª»»Ä£¿é¿ÉÄÜÊÇ´íÎóµÄ
+	//? ï¿½â²¿ï¿½ï¿½×ªï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ï¿½ï¿½ï¿½
 	//? One possible algorithm: R8 = ( R5 * 527 + 23 ) >> 6;
 	//?						    G8 = ( G6 * 259 + 33 ) >> 6;
 	//?						    B8 = ( B5 * 527 + 23 ) >> 6;

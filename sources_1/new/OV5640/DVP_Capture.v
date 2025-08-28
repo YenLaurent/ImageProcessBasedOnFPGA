@@ -5,7 +5,6 @@ module DVP_Capture(
     input  wire        Href,
     input  wire [7:0]  Data,
 
-    output reg         ImageState,
     output reg         DataValid,
     output reg [15:0]  DataPixel,
     output reg         DataHs,
@@ -15,17 +14,17 @@ module DVP_Capture(
 );
 
     reg DataHs_reg;
-    // ¼Ä´æÊäÈëÐÅºÅ
+    // ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½
     reg r_Vsync, r_Href;
     reg [7:0] r_Data;
     always @(posedge PCLK) begin
         r_Vsync <= Vsync;
         r_Href  <= Href;
         r_Data  <= Data;
-        DataHs  <= DataHs_reg;  //* ÑÓÊ±Ò»ÅÄ
+        DataHs  <= DataHs_reg;  //* ï¿½ï¿½Ê±Ò»ï¿½ï¿½
     end
 
-    // Ö¡¶ªÆú¼ÆÊýÆ÷
+    // Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     reg [3:0] frame_cnt = 0;
     reg       frame_ready = 0;
 
@@ -33,19 +32,19 @@ module DVP_Capture(
         if (Rst_p) begin
             frame_cnt   <= 0;
             frame_ready <= 0;
-        end else if (~r_Vsync & Vsync) begin  // Vsync ÉÏÉýÑØ
+        end else if (~r_Vsync & Vsync) begin  // Vsync ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (frame_cnt < 4'd10)
                 frame_cnt <= frame_cnt + 1;
             if (frame_cnt == 4'd9)
-                frame_ready <= 1'b1; // µÚ10Ö¡¿ªÊ¼²É¼¯
+                frame_ready <= 1'b1; // ï¿½ï¿½10Ö¡ï¿½ï¿½Ê¼ï¿½É¼ï¿½
         end
     end
 
-    // Êý¾ÝÆ´½Ó
+    // ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½
     reg       byte_flag = 0;
     reg [7:0] high_byte = 0;
     reg       href_last = 0;
-    reg       last_pixel_hold = 0; // ÐÐÎ²±£³Ö×îºóÒ»¸öÏñËØµÄ±êÖ¾
+    reg       last_pixel_hold = 0; // ï¿½ï¿½Î²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ØµÄ±ï¿½Ö¾
 
     always @(posedge PCLK or posedge Rst_p) begin
         if (Rst_p) begin
@@ -58,6 +57,7 @@ module DVP_Capture(
             byte_flag   <= 1'b0;
             href_last   <= 1'b0;
             last_pixel_hold <= 1'b0;
+            high_byte <= 0;
         end else begin
             href_last <= r_Href;
             DataHs_reg<= r_Href;
@@ -79,13 +79,13 @@ module DVP_Capture(
                         DataValid <= 1;
                         byte_flag <= 0;
                         Xaddr     <= Xaddr + 1;
-                        // Èç¹ûÏÂÒ»ÅÄ href »áÎÞÐ§£¬ËµÃ÷ÊÇ×îºóÒ»¸öpixel
+                        // ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ href ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½pixel
                         if (href_last && !Href)
                             last_pixel_hold <= 1;
                     end
                 end else begin
                     if (last_pixel_hold) begin
-                        // ÑÓ³ÙÒ»¸öÖÜÆÚÀ­µÍ DataValid
+                        // ï¿½Ó³ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ DataValid
                         DataValid <= 1;
                         last_pixel_hold <= 0;
                     end else begin
@@ -97,7 +97,7 @@ module DVP_Capture(
                     end
                 end
             end else begin
-                DataValid <= 0; // ¶ªÆúÇ°10Ö¡
+                DataValid <= 0; // ï¿½ï¿½ï¿½ï¿½Ç°10Ö¡
             end
         end
     end

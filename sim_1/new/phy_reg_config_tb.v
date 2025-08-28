@@ -27,7 +27,6 @@ module phy_reg_config_tb(
     //* Step 1: 输入输出端口及例化
     reg clk;                          // 模块系统时钟
     reg rst_n;                        // 复位信号，低电平有效
-    wire phy_rst_n;                   // PHY复位信号
     wire [15:0] read_data;            // 读取的寄存器数据
     wire phy_config_done;             // PHY初始化完成标志
     wire mdc;                          // MDC时钟信号
@@ -41,7 +40,6 @@ module phy_reg_config_tb(
     ) phy_reg_config_inst (
         .clk                (clk),
         .rst_n              (rst_n),
-        .phy_rst_n          (phy_rst_n),
         .read_data          (read_data),
         .phy_config_done    (phy_config_done),
         .mdc                (mdc),
