@@ -4,20 +4,23 @@
 // Engineer: Yen Laurent
 // 
 // Create Date: 2025/03/30 17:38:36
-// Design Name: Module to connect 2 ram_based shift register IP
+// Design Name: Module to connect ram_based shift register IP
 // Module Name: shift_register_2taps
 // Project Name: ImageProcess
 // Target Devices: Xilinx FPGA Artix-7
 // Tool Versions: Vivado 2023.2
-// Description: 将Xilinx Vivado中生成的RAM-based Shift Register IP（8位位宽，深度为400）连接起来，形成一个2tap的移位寄存器
-// 每个移位寄存器都可以存储一行图像数据（要求图像尺寸长400像素），级联后可存储两行，接收输入灰度8位图像数据，串行输出
-// （每次8位）两行（长度400位）数据
+// Description: 将Xilinx Vivado中生成的RAM-based Shift Register IP连接起来，
+// 形成一个位宽为8位的、位深度总和为1280*2位的移位寄存器，以寄存两行图像数据，
+// 用于后续中值滤波、边缘检测等模块的行寄存
 // Dependencies: None
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments: taps1x为高位移位寄存器的输出，taps0x为低位移位寄存器的输出
-// 
+// Additional Comments: 
+// 1. taps1x为高位移位寄存器的输出，taps0x为低位移位寄存器的输出
+//*2. 本模块可寄存行宽为1280像素的图像数据共两行，分别以taps1x、taps0x作为上一行、上上行数据的串行输出端口
+//*3. 由于Vivado中生成的RAM-based Shift Register IP最大深度限制为1088，单个IP无法满足寄存1280像素行宽的需求，
+//*   因此调用IP核深度设置为**640**像素，由2个IP级联实现单行像素的缓存，因此缓存两行像素共需要4次IP调用
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -33,15 +36,32 @@ module shift_register_2taps #(
 
     assign dat_out = taps0x; // 输出信号即最低位移位寄存器的输出
 
-    shift_reg_ram shift_reg_ram_inst1 (
+    wire [DATA_WIDTH-1:0] taps_reg_1;       // 用于第一个640深度寄存器的中间输出连接
+    wire [DATA_WIDTH-1:0] taps_reg_0;       // 用于第三个640深度寄存器的中间输出连接
+
+    shift_reg_ram shift_reg_ram_inst3 (
         .D      (dat_in),
+        .CLK    (clk),
+        .CE     (dat_in_valid),
+        .Q      (taps_reg_1)
+    );
+
+    shift_reg_ram shift_reg_ram_inst2 (
+        .D      (taps_reg_1),
         .CLK    (clk),
         .CE     (dat_in_valid),
         .Q      (taps1x)
     );
 
-    shift_reg_ram shift_reg_ram_inst0 (
+    shift_reg_ram shift_reg_ram_inst1 (
         .D      (taps1x),
+        .CLK    (clk),
+        .CE     (dat_in_valid),
+        .Q      (taps_reg_0)
+    );
+
+    shift_reg_ram shift_reg_ram_inst0 (
+        .D      (taps_reg_0),
         .CLK    (clk),
         .CE     (dat_in_valid),
         .Q      (taps0x)
