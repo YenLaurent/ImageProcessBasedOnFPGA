@@ -50,8 +50,7 @@ module udp_send(
     output           gmii_tx_clk,        // GMII发送时钟信号
     output reg [7:0] gmii_txd,           // GMII发送数据
     output reg       gmii_tx_en,         // GMII发送使能信号
-    output reg       tx_done,            // 发送完成信号
-    output [11:0]    fifo_write_usage    // FIFO写入使用率
+    output reg       tx_done             // 发送完成信号
     );
 
     //* Step 1. 固定字段声明 Fixed Fields Declaration
@@ -105,6 +104,7 @@ module udp_send(
     //* Step 3. 实例化FIFO Instantiate FIFO for user data
     wire [7:0] fifo_read_data;      // FIFO读取数据
     reg fifo_read_request;          // FIFO读请求信号
+    wire [11:0] fifo_write_usage;   // FIFO写入使用率
     wire [11:0] fifo_read_usage;    // FIFO读取使用率
     wire fifo_full;                 // FIFO满信号
     wire fifo_empty;                // FIFO空信号
@@ -225,12 +225,13 @@ module udp_send(
     //* Step 7. CRC32校验模块实例化 CRC32 Checksum Module Instantiation
     wire crc_reset_n;                // CRC复位信号
     wire [31:0] crc_result;          // CRC校验结果
-    reg crc_en;                      // CRC使能信号
+    reg  crc_en;                     // CRC使能信号（对实际发送字节的使能，延迟1拍以与gmii_txd对齐）
+    wire crc_en_raw;                 // 基于状态的原始CRC窗口（当前拍）
 
     crc32_d8 crc32_d8_inst(
         .clk            (clk_125m),          // 时钟信号
         .reset_n        (crc_reset_n),       // 复位信号
-        .data_in        (gmii_txd_reg),      // 输入数据
+        .data_in        (gmii_txd),          // 输入数据：对外实际发送的字节（比gmii_txd_reg晚1拍）
         .crc_init       (1'b0),              // CRC初始化信号，通常为0
         .crc_en         (crc_en),            // CRC使能信号
         .crc_result     (crc_result)         // CRC校验结果输出
@@ -265,6 +266,24 @@ module udp_send(
     // CRC32复位信号逻辑
     assign crc_reset_n = !(send_state == IDLE);
 
+    // 基于状态的CRC窗口（当前拍）：去掉前导码/SFD和CRC四字节，仅在DMAC~UDP头~用户数据期间为1
+    assign crc_en_raw = (send_state == SEND_MAC_DES)
+                     || (send_state == SEND_MAC_SRC)
+                     || (send_state == SEND_MAC_TYPE)
+                     || (send_state == SEND_IP_HEADER)
+                     || (send_state == SEND_UDP_HEADER)
+                     || (send_state == SEND_USER_DATA);
+
+    // 将原始窗口延迟1拍，使之与gmii_txd对齐：
+    // 进入SEND_MAC_DES的第1拍时gmii_txd仍为SFD，延迟后在下一拍使能，gmii_txd正好为DMAC[47:40]
+    // 进入SEND_CRC的第1拍时gmii_txd仍为最后一个用户字节，延迟后该拍仍使能，下一拍开始关闭，避免把CRC自身计入
+    always @(posedge clk_125m or negedge reset_n) begin
+        if (!reset_n)
+            crc_en <= 1'b0;
+        else
+            crc_en <= crc_en_raw;
+    end
+
     always @(posedge clk_125m or negedge reset_n)
         if (!reset_n) begin
             send_state <= IDLE;                             // 复位时进入空闲状态
@@ -283,7 +302,7 @@ module udp_send(
 
             fifo_read_request <= 1'b0;                      // FIFO读请求信号清零
             tx_done_reg <= 1'b0;                            // 发送完成信号清零
-            crc_en <= 1'b0;                                 // CRC使能信号清零
+            // crc_en 由上面的门控逻辑驱动
         end
         else
             case (send_state)
@@ -318,7 +337,6 @@ module udp_send(
                 end
 
                 SEND_MAC_DES: begin
-                    crc_en <= 1'b1;                         // 使能CRC计算
                     /*注意：crc32_d8.v模块的输入数据只有8位，因此该模块将不断接收输入数据，
                     对CRC校验码进行迭代更新，直到使能信号无效
                     因此，CRC32校验码的计算应该在gmii_txd_reg这一输出端口开始正式输出MAC帧时便开始计算，
@@ -445,7 +463,6 @@ module udp_send(
                 end
 
                 SEND_CRC: begin
-                    crc_en <= 1'b0;                     // 关闭CRC计算
 
                     if (cnt_crc >= 3) begin
                         send_state <= IDLE;             // 如果发送CRC计数器达到4字节，本次发送完毕，进入空闲状态

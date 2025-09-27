@@ -41,14 +41,14 @@ module ip_checksum(
     wire [31:0] sum_b;
 
     assign sum_a = {version, ihl, tos} + 
-                 total_length + 
-                 identification + 
-                 {flags, fragment_offset} + 
-                 {ttl, protocol} + 
-                 source_ip[31:16] +
-                 source_ip[15:0] +
-                 dest_ip[31:16] +
-                 dest_ip[15:0];
+                    total_length + 
+                    identification + 
+                    {flags, fragment_offset} + 
+                    {ttl, protocol} + 
+                    source_ip[31:16] +
+                    source_ip[15:0] +
+                    dest_ip[31:16] +
+                    dest_ip[15:0];
     
     assign sum_b = sum_a[31:16] + sum_a[15:0];
 

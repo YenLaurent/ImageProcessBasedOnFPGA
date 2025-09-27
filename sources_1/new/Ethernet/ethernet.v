@@ -30,7 +30,7 @@ module ethernet #(
     parameter IMAGE_HEIGHT = 720,                       // 图像高度，单位：像素
     parameter [1:0] ETHERNET_SPEED = 2'b10,             // 10为千兆，01为百兆，00为十兆
     parameter [47:0] DES_MAC = 48'hff_ff_ff_ff_ff_ff,   // 目标MAC地址，默认为广播地址
-    parameter [47:0] SRC_MAC = 48'h00_00_00_00_00_00,   // 源MAC地址，需在实例化时指定
+    parameter [47:0] SRC_MAC = 48'h00_0a_35_01_fe_c0,   // 源MAC地址，需在实例化时指定
     parameter [31:0] DES_IP = 32'hc0_a8_00_03,          // 目标IP地址，默认为192.168.0.3
     parameter [31:0] SRC_IP = 32'hc0_a8_00_02,          // 源IP地址，默认为192.168.0.2
     parameter [15:0] DES_UDP_PORT = 16'd6102,           // 目标UDP端口号，默认为6102
@@ -79,7 +79,6 @@ module ethernet #(
     wire [7:0] gmii_txd;          // GMII发送数据
     wire gmii_tx_en;              // GMII发送使能信号
     wire tx_done;                 // 发送完成信号
-    wire [11:0] fifo_write_usage; // FIFO写入使用率
 
     udp_send udp_send_inst(
         // inputs
@@ -100,8 +99,7 @@ module ethernet #(
         .gmii_tx_clk       (gmii_tx_clk),
         .gmii_txd          (gmii_txd),
         .gmii_tx_en        (gmii_tx_en),
-        .tx_done           (tx_done),
-        .fifo_write_usage  (fifo_write_usage)
+        .tx_done           (tx_done)
     );
 
     //* Step 3: Instantiate GMII to RGMII conversion module

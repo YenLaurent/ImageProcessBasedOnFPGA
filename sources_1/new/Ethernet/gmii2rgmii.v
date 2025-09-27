@@ -19,7 +19,7 @@
 // Additional Comments: RGMII的数据输出接口在上升沿发送GMII的数据低四位，下降沿发送GMII的数据高四位
 // RGMII的控制信号在上升沿发送GMII接口的有效信号，下降沿发送GMII接口的错误信号
 // RGMII的时钟输出信号则与GMII一致，仍然采用ODDR寄存器进行输出，以保证其与数据、控制位的同步
-// 注意：RGMII的时钟是双沿敏感的，因此需要使用ODDR原语来处理时钟信号
+//*注意：RGMII的时钟是双沿敏感的，因此需要使用ODDR原语来处理时钟信号
 // 该部分用于FPGA通过以太网发送数据，将GMII数据转换为RGMII数据，时钟信号由FPGA MAC提供
 // 注意：为了保证建立时间和保持时间，RGMII的输出时钟信号需要和数据信号呈90°相移
 // 在这里，由于该模块是发送端，而FPGA开发板上的PHY可以自动对时钟信号进行相移，因此输出的RGMII时钟信号
@@ -83,8 +83,8 @@ module gmii2rgmii(
         .Q  (rgmii_tx_ctl),             // RGMII transmit control output
         .C  (gmii_tx_clk),              // GMII transmit clock input
         .CE (1'b1),                     // Clock enable
-        .D1 (gmii_tx_en),               // Data input for rising edge (enable)
-        .D2 (gmii_tx_er),               // Data input for falling edge (error)
+        .D1 (gmii_tx_en),               // Rising edge: TX_EN
+        .D2 (gmii_tx_en ^ gmii_tx_er),  // Falling edge: TX_EN XOR TX_ER (RGMII v2.0)
         .R  (!reset_n),                 // Reset signal, active low
         .S  (1'b0)                      // Set signal, not used
     );

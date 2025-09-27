@@ -51,8 +51,9 @@ set_property PACKAGE_PIN AA18 [get_ports mdc]
 set_property PACKAGE_PIN W17 [get_ports mdio]
 set_property PACKAGE_PIN U22 [get_ports rgmii_tx_clk]
 set_property PACKAGE_PIN AA19 [get_ports rgmii_tx_ctl]
-set_property PACKAGE_PIN M22 [get_ports phy_config_done]
 set_property PACKAGE_PIN B21 [get_ports rst_n]
 
 #! This is to fix the implementation issue: BUFG and IOB are too close
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_pixel_IBUF]
+
+set_property PACKAGE_PIN A16 [get_ports phy_config_done]

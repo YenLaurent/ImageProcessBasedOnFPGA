@@ -17,7 +17,7 @@
 // Revision 0.01 - File Created
 // Additional Comments:
 // 1. 系统复位信号rst_n约束至开发板S4按键
-// 2. PHY配置完成标志phy_config_done约束至开发板LED0
+// 2. PHY配置完成标志phy_config_done约束至开发板LED0（目前PHY配置模块未启用，因此配置完成标志始终无效）
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -31,7 +31,7 @@ module ImageProcess #(
     // Ethernet Parameters
     parameter [1:0] ETHERNET_SPEED = 2'b10,             // 10为千兆，01为百兆，00为十兆
     parameter [47:0] DES_MAC = 48'hff_ff_ff_ff_ff_ff,   // 目标MAC地址，默认为广播地址
-    parameter [47:0] SRC_MAC = 48'h00_00_00_00_00_00,   // 源MAC地址，需在实例化时指定
+    parameter [47:0] SRC_MAC = 48'h00_0a_35_01_fe_c0,   // 源MAC地址，需在实例化时指定
     parameter [31:0] DES_IP = 32'hc0_a8_00_03,          // 目标IP地址，默认为192.168.0.3
     parameter [31:0] SRC_IP = 32'hc0_a8_00_02,          // 源IP地址，默认为192.168.0.2
     parameter [15:0] DES_UDP_PORT = 16'd6102,           // 目标UDP端口号，默认为6102
@@ -116,15 +116,9 @@ module ImageProcess #(
     wire sobel_hsync;
     wire sobel_vsync;
     reg clk_pixel_division;             // 二分频像素时钟
-    reg cnt_pixel_division;             // 二分频像素时钟计数
 
     always @(posedge clk_pixel)
-        if (cnt_pixel_division == 1'b1) begin
-            cnt_pixel_division <= 1'b0;
-            clk_pixel_division <= ~clk_pixel_division;  
-        end
-        else
-            cnt_pixel_division <= cnt_pixel_division + 1'b1;
+        clk_pixel_division <= ~clk_pixel_division;
     //! 这一部分的时钟产生很可能不可用
 
     image_process_top #(

@@ -22,7 +22,7 @@
 
 
 module phy_reg_config #(
-    parameter SPEED = 2'b01,            // 10为千兆，01为百兆，00为十兆
+    parameter SPEED = 2'b10,            // 10为千兆，01为百兆，00为十兆
     parameter MODULE_CLK = 50_000_000,  // 模块时钟采用50MHz
     parameter MDC_CLK = 2_000,          // MDC总线时钟采用2kHz
     parameter REG2CONFIG = 2            // 要配置的寄存器个（次）数

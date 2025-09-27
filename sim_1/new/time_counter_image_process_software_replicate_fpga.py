@@ -15,7 +15,6 @@ def time_counter(WIDTH=WIDTH,
                  HEIGHT=HEIGHT,
                  THRESHOLD=THRESHOLD,
                  image_path="test.jpg"):
-  img = Image.open(image_path)
   """
   To count the image processing time using PYTHON, not including file reading/writing and visualizing time.
 
@@ -26,6 +25,8 @@ def time_counter(WIDTH=WIDTH,
     image_path (str): The path of the image to be processed, ABSOLUTE PATH maybe needed.
   """
 
+  img = Image.open(image_path)
+
   # Start to calculate the time
   start_time_internal = time.perf_counter()
 
@@ -34,7 +35,7 @@ def time_counter(WIDTH=WIDTH,
     img = img.convert('RGB')
 
   img_resized = img.resize(size=(WIDTH, HEIGHT),
-                          resample=Image.Resampling.LANCZOS)
+                           resample=Image.Resampling.LANCZOS)
   img_array = np.array(img_resized)
   r_channel = img_array[:, :, 0].flatten() # All rows, all columns, 0th channel (Red)
   g_channel = img_array[:, :, 1].flatten() # All rows, all columns, 1st channel (Green)

@@ -16,7 +16,7 @@
 // RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 // NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
 // USE OR PERFORMANCE OF THIS SOFTWARE.
-// [Note] 输入数据被按位反转，因此最终输出CRC32校验码会按字节反转
+//*输入数据被按位反转，因此最终输出CRC32校验码会按字节反转
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -36,7 +36,7 @@ module crc32_d8(
 	wire [7:0] data_reversed;
 
 	assign data_reversed = {data_in[0], data_in[1], data_in[2], data_in[3], data_in[4], data_in[5], data_in[6], data_in[7]};
-	// [Note] 输入数据被按位反转，因此最终输出CRC32校验码会按字节反转
+	//* 输入数据被按位反转，因此最终输出CRC32校验码会按字节反转
 
 	assign crc_next[0] = crc[24] ^ crc[30] ^ data_reversed[0] ^ data_reversed[6];
 	assign crc_next[1] = crc[24] ^ crc[25] ^ crc[30] ^ crc[31] ^ data_reversed[0] ^ data_reversed[1] ^ data_reversed[6] ^ data_reversed[7];
@@ -79,7 +79,7 @@ module crc32_d8(
     else if (crc_en)
       crc <= crc_next;
 
-  	assign crc_result = ~{crc_next[24], crc_next[25], crc_next[26], crc_next[27],crc_next[28], crc_next[29], crc_next[30], crc_next[31],
+  	assign crc_result = ~{crc_next[24], crc_next[25], crc_next[26], crc_next[27], crc_next[28], crc_next[29], crc_next[30], crc_next[31],
                       	  crc[16], crc[17], crc[18], crc[19],crc[20], crc[21], crc[22], crc[23],
                       	  crc[8], crc[9], crc[10], crc[11],crc[12], crc[13], crc[14], crc[15],
                       	  crc[0], crc[1], crc[2], crc[3],crc[4], crc[5], crc[6], crc[7]};		

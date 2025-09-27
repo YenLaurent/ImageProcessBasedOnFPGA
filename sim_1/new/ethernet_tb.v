@@ -48,7 +48,7 @@ module ethernet_tb(
         .IMAGE_HEIGHT           (3),                        // 测试用3行图像
         .ETHERNET_SPEED         (2'b10),                    // 千兆以太网
         .DES_MAC                (48'hff_ff_ff_ff_ff_ff),    // 广播地址
-        .SRC_MAC                (48'h00_00_00_00_00_01),    // 源MAC地址
+        .SRC_MAC                (48'h00_0a_35_01_fe_c0),    // 源MAC地址
         .DES_IP                 (32'hc0_a8_00_03),          // 目标IP地址
         .SRC_IP                 (32'hc0_a8_00_02),          // 源IP地址
         .DES_UDP_PORT           (16'd6102),                 // 目标UDP端口号
@@ -68,11 +68,11 @@ module ethernet_tb(
         .rgmii_txd              (rgmii_txd),
         .rgmii_tx_clk           (rgmii_tx_clk),
         .rgmii_tx_ctl           (rgmii_tx_ctl),
-        .phy_rst_n              (phy_rst_n),
         .phy_config_done        (phy_config_done),
         .phy_read_data          (phy_read_data),
         .mdc                    (mdc),
-        .mdio                   (mdio)
+        .mdio                   (mdio),
+        .fifo_read_usage        (fifo_read_usage)
     );
 
     //* Step 2: 时钟生成
