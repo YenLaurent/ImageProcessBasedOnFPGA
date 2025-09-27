@@ -26,7 +26,7 @@ module ImageProcess #(
     parameter IMAGE_WIDTH = 1280,       // 图像宽度，单位：像素
     parameter IMAGE_HEIGHT = 720,       // 图像高度，单位：像素
     parameter DATA_WIDTH = 8,           // 灰度滤波后图像的位宽
-    parameter THRESHOLD = 8'd128,       // SOBEL算子阈值
+    parameter THRESHOLD = 8'd50,        // SOBEL算子阈值
     parameter METHOD = "WEIGHT",        // 灰度滤波办法，"AVERAGE": 平均值法，"WEIGHT": 加权平均法
     // Ethernet Parameters
     parameter [1:0] ETHERNET_SPEED = 2'b10,             // 10为千兆，01为百兆，00为十兆

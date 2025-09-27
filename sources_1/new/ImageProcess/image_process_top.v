@@ -26,7 +26,7 @@
 
 module image_process_top #(
     parameter DATA_WIDTH = 8,           // 数据位宽，即灰度数据的单个颜色通道的位宽
-    parameter THRESHOLD = 8'd128,       // sobel算子阈值
+    parameter THRESHOLD = 8'd50,        // sobel算子阈值
     parameter METHOD = "WEIGHT"         // 灰度滤波办法，"AVERAGE": 平均值法，"WEIGHT": 加权平均法
     )(
     input clk, rst_p,                   // 时钟、复位信号
