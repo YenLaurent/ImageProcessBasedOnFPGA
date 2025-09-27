@@ -451,7 +451,7 @@ module udp_send(
                 end
 
                 SEND_USER_DATA: begin
-                    if (cnt_user_data >= data_length_reg - 1) begin
+                    if (cnt_user_data >= data_length_reg) begin
                         send_state <= SEND_CRC;
                         cnt_user_data <= 0;         // 清零计数器
                         fifo_read_request <= 1'b0;  // 关闭FIFO读取

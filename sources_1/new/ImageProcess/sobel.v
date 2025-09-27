@@ -172,7 +172,7 @@ module sobel #(
     // 最终结果
     always @(posedge clk or posedge reset_p)
         if (reset_p)    sobel <= 1'b0;
-        else if (median_valid_reg[1])   sobel <= ((Gx_absolute + Gy_absolute) > THRESHOLD) ? 1'b0 : 1'b1;
+        else if (median_valid_reg[1])   sobel <= ((Gx_absolute + Gy_absolute) > THRESHOLD) ? 1'b1 : 1'b0;
         // 延时两个时钟周期
 
     always @(posedge clk) begin

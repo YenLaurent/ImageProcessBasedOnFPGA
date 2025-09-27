@@ -33,7 +33,7 @@ module ov5640 #(
 	assign camera1_xclk = clk_24m;
 	
 	camera_init #(
-		.IMAGE_WIDTH 	(IMAGE_WIDTH/2),	// ͼƬ����
+		.IMAGE_WIDTH 	(IMAGE_WIDTH),	// use full width
 		.IMAGE_HEIGHT	(IMAGE_HEIGHT),		// ͼƬ�߶�
 		.IMAGE_FLIP_EN  (0),				// 0: ����ת��1: ���·�ת
 		.IMAGE_MIRROR_EN(0) 				// 0: ������1: ���Ҿ���
