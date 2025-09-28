@@ -29,14 +29,14 @@
 
 
 module sobel #(
-    parameter DATA_WIDTH = 8,           // 数据位宽，即灰度数据的单个颜色通道的位宽
-    parameter THRESHOLD = 50            // SOBEL算子阈值
+    parameter DATA_WIDTH = 8            // 数据位宽，即灰度数据的单个颜色通道的位宽
     )(
     input clk, reset_p,                 // 时钟、复位信号
     input [DATA_WIDTH-1:0] median,      // 输入经过中值滤波后的灰度图像数据
     input median_valid,                 // 输入数据有效信号
     input median_hsync,                 // 输入数据行同步信号
     input median_vsync,                 // 输入数据场同步信号
+    input [7:0] threshold,              // sobel算子阈值
 
     output reg sobel,                   // 输出经过SOBEL算子处理后的图像数据，为二值数据，只有黑和白
     output reg sobel_valid,             // 输出数据有效信号
@@ -172,7 +172,7 @@ module sobel #(
     // 最终结果
     always @(posedge clk or posedge reset_p)
         if (reset_p)    sobel <= 1'b0;
-        else if (median_valid_reg[1])   sobel <= ((Gx_absolute + Gy_absolute) > THRESHOLD) ? 1'b0 : 1'b1;
+        else if (median_valid_reg[1])   sobel <= ((Gx_absolute + Gy_absolute) > threshold) ? 1'b0 : 1'b1;
         // 延时两个时钟周期
 
     always @(posedge clk) begin

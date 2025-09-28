@@ -26,13 +26,13 @@
 
 module image_process_top #(
     parameter DATA_WIDTH = 8,           // 数据位宽，即灰度数据的单个颜色通道的位宽
-    parameter THRESHOLD = 8'd50,        // sobel算子阈值
     parameter METHOD = "WEIGHT"         // 灰度滤波办法，"AVERAGE": 平均值法，"WEIGHT": 加权平均法
     )(
     input clk, rst_p,                   // 时钟、复位信号
     input rgb_valid,                    // 输入RGB信号有效标志
     input rgb_hsync, rgb_vsync,         // 输入RGB信号的行同步、场同步信号
     input [DATA_WIDTH-1:0] r, g, b,     // 输入三通道RGB888信号
+    input [7:0] threshold,              // sobel算子阈值
     
     output sobel,                       // 输出经过sobel算子处理后的图像数据，为二值数据，只有黑和白
     output sobel_valid,                 // 输出数据有效信号
@@ -79,8 +79,7 @@ module image_process_top #(
     );
 
     sobel #(
-        .DATA_WIDTH     (DATA_WIDTH),   // 数据位宽，即灰度数据的单个颜色通道的位宽
-        .THRESHOLD      (THRESHOLD)     // sobel算子阈值
+        .DATA_WIDTH     (DATA_WIDTH)    // 数据位宽，即灰度数据的单个颜色通道的位宽
     ) sobel_inst(
         .clk            (clk),
         .reset_p        (rst_p),        // 时钟、复位信号
@@ -88,6 +87,7 @@ module image_process_top #(
         .median_valid   (median_valid), // 输入数据有效信号
         .median_hsync   (median_hsync), // 输入数据行同步信号
         .median_vsync   (median_vsync), // 输入数据场同步信号
+        .threshold      (threshold),    // sobel算子阈值
 
         .sobel          (sobel),        // 输出经过sobel算子处理后的图像数据，为二值数据，只有黑和白
         .sobel_valid    (sobel_valid),  // 输出数据有效信号

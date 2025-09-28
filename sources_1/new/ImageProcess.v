@@ -18,6 +18,7 @@
 // Additional Comments:
 // 1. 系统复位信号rst_n约束至开发板S4按键
 // 2. PHY配置完成标志phy_config_done约束至开发板LED0（目前PHY配置模块未启用，因此配置完成标志始终无效）
+// 3. SOBEL算子阈值通过开发板S2/S3按键调节，范围0~255，步长20，初始值128
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,7 +27,6 @@ module ImageProcess #(
     parameter IMAGE_WIDTH = 1280,       // 图像宽度，单位：像素
     parameter IMAGE_HEIGHT = 720,       // 图像高度，单位：像素
     parameter DATA_WIDTH = 8,           // 灰度滤波后图像的位宽
-    parameter THRESHOLD = 8'd50,        // SOBEL算子阈值
     parameter METHOD = "WEIGHT",        // 灰度滤波办法，"AVERAGE": 平均值法，"WEIGHT": 加权平均法
     // Ethernet Parameters
     parameter [1:0] ETHERNET_SPEED = 2'b10,             // 10为千兆，01为百兆，00为十兆
@@ -38,9 +38,13 @@ module ImageProcess #(
     parameter [15:0] SRC_UDP_PORT = 16'd5000,           // 源UDP端口号，默认为5000
     parameter [15:0] DATA_LENGTH = IMAGE_WIDTH / 8 + 2  // 用户单帧数据长度（不包含任何报头）
     )(
+    // System Interface
     input clk_sys,              // 系统50MHz晶振时钟
     input clk_pixel,            // 由OV5640提供的像素时钟
     input rst_n,                // 系统复位信号，低电平有效
+    // Threshold Setting
+    input s3,                   // 阈值设置按键，增加阈值
+    input s2,                   // 阈值设置按键，减少阈值
     // OV5640 Camera Interface
     inout camera_sdat,			// IIC数据
 	input camera_vsync,         // 场同步信号
@@ -116,6 +120,7 @@ module ImageProcess #(
     wire sobel_hsync;
     wire sobel_vsync;
     reg clk_pixel_division;             // 二分频像素时钟
+    wire [7:0] threshold;               // sobel算子阈值
 
     always @(posedge clk_pixel)
         clk_pixel_division <= ~clk_pixel_division;
@@ -123,7 +128,6 @@ module ImageProcess #(
 
     image_process_top #(
         .DATA_WIDTH     (DATA_WIDTH),   // 数据位宽，即灰度数据的单个颜色通道的位宽
-        .THRESHOLD      (THRESHOLD),    // SOBEL算子阈值
         .METHOD         (METHOD)        // 灰度滤波办法，"AVERAGE": 平均值法，"WEIGHT": 加权平均法
     ) image_process_top(
         // inputs
@@ -135,6 +139,7 @@ module ImageProcess #(
         .r              (red),                      // 输入8 bit红色像素数据
         .g              (green),                    // 输入8 bit绿色像素数据
         .b              (blue),                     // 输入8 bit蓝色像素数据
+        .threshold      (threshold),                // sobel算子阈值
         // outputs
         .sobel          (sobel),                    // 输出经过SOBEL算子处理后的图像数据
         .sobel_valid    (sobel_valid),              // 输出经过SOBEL算子处理后的图像数据有效标志
@@ -173,4 +178,18 @@ module ImageProcess #(
         .mdc            (mdc),
         .mdio           (mdio)
     );
+
+    //* 5. Threshold Adjustment Logic
+    sobel_thres_adjust #(
+        .DEBOUNCE_TICKS (24'd250_000),  // 默认按 10ms@25MHz 估算，可按需调整
+        .THRESH_INIT    (8'd128),       // 阈值复位初值
+        .THRESH_STEP    (8'd10)         // 每次调节步长
+    ) sobel_thres_adjust(
+        .rst_n              (rst_n),                // 系统复位信号，低电平有效
+        .clk_pixel_division (clk_pixel_division),   // 由OV5640提供的像素时钟经二分频后的时钟
+        .s3                 (s3),                   // 阈值设置按键，增加阈值
+        .s2                 (s2),                   // 阈值设置按键，减少阈值
+        .threshold          (threshold)             // sobel算子阈值
+    );
+
 endmodule
