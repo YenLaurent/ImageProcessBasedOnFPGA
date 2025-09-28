@@ -1,136 +1,138 @@
-# Image Process Based on FPGA
+# FPGA-based Image Preprocessing and Ethernet Transmission System
 
-- [Image Process Based on FPGA](#image-process-based-on-fpga)
-    - [简要介绍](#简要介绍)
-    - [为什么采用FPGA进行预处理？](#为什么采用fpga进行预处理)
-    - [后续的进一步计划](#后续的进一步计划)
-    - [技术细节](#技术细节)
-      - [SOBEL边缘检测](#sobel边缘检测)
-      - [中值滤波](#中值滤波)
-      - [彩色图像灰度化](#彩色图像灰度化)
-    - [困难和解决办法](#困难和解决办法)
-      - [系统架构与硬件划分](#系统架构与硬件划分)
-      - [协同仿真](#协同仿真)
-    - [模块划分](#模块划分)
-    - [如何与上位机通信：采用何种通信协议](#如何与上位机通信采用何种通信协议)
+English | [简体中文](./README_SC.md)
 
+> This project is part of the 2024–2025 UESTC "Qiangxin Yumiao" research program and the university-level Innovation & Entrepreneurship Training Plan. It implements an FPGA-based image preprocessing and transmission system: frames from an OV5640 camera are processed through three modules—color-to-grayscale filtering, median filtering (on grayscale), and Sobel edge detection—then transmitted to a PC via Ethernet for subsequent AI edge recognition on the host.
 
-***该项目依托于电子科技大学2024-2025学年“基于边缘计算的电瓶车闯红灯检测系统开发”大创项目***
+---
 
-### 简要介绍
+## Showcase
 
-该大创项目依托于电子科技大学集成电路学院“强芯育苗”科研计划，针对**现有交通监控系统对非机动车闯红灯行为检测效率低、实时性差**的问题，提出了一种**基于边缘计算的软硬件结合的人工智能实时监测系统**解决方案，通过FPGA采集道路图像信息并进行图像滤波预处理，将视频流数据送至上位机进行基于YOLO人工智能模型的实时边缘检测，实现对电瓶车闯红灯行为的自动检测与记录，解决了传统电子眼难以对非机动车进行准确的闯红灯识别的问题。
+<p align="center">
+  <img src="./results/image_process_results/testbench_results/image_process_example/fpga_method.png" alt="FPGA image processing example" width="75%"/>
+  <br/>
+  <em>Figure: Example result of the FPGA-side image preprocessing pipeline</em>
+  <br/>
+  <sup>Image path: results/image_process_results/testbench_results/image_process_example/fpga_method.png</sup>
+</p>
 
-该项目确定了基于FPGA的边缘端预处理与上位机YOLO模型协同的系统架构。截至中期答辩，已实现基于FPGA的彩色图像灰度滤波、灰度图像中值滤波与SOBEL算子边缘检测处理，并进行了Python-Verilog协同仿真验证，在处理单帧尺寸为`200*200`的图像时，相对于传统的软件处理，在100MHz时钟下，该设计的处理延迟可提升约12.74%~28.70%。
+## Table of Contents
+- [FPGA-based Image Preprocessing and Ethernet Transmission System](#fpga-based-image-preprocessing-and-ethernet-transmission-system)
+  - [Table of Contents](#table-of-contents)
+  - [Use Cases](#use-cases)
+  - [Key Advantages](#key-advantages)
+  - [Targets and Project Info](#targets-and-project-info)
+  - [Quick Start](#quick-start)
+  - [Parameters](#parameters)
+  - [Performance Evaluation](#performance-evaluation)
+  - [Algorithm Choices](#algorithm-choices)
+    - [Median vs. Gaussian Filtering](#median-vs-gaussian-filtering)
+    - [Sobel vs. Canny](#sobel-vs-canny)
+  - [Folders and Project Structure](#folders-and-project-structure)
 
-### 为什么采用FPGA进行预处理？
+---
 
-**传统方法的局限性：**
+## Use Cases
+Edge-side image preprocessing/transmission scenarios, e.g., detecting red-light running by vehicles or e-bikes.
 
-传统的人工智能检测方法，通常是将不同交通路口的摄像头所采集的原始视频流，直接送至上位机，由CPU或GPU来进行所有的处理，包括图像预处理（如本项目所采用的灰度滤波、中值滤波、边缘检测）和后续的YOLO模型推理。这存在以下几个问题：
+## Key Advantages
+- Offload part of the processing traditionally done on the host to the edge device, reducing host compute load.
+- Drastically reduce network bandwidth: from raw RGB888 (24-bit) to 1-bit binary images after Sobel.
 
-1. **上位机成为性能瓶颈**：图像预处理，特别是像中值滤波和Sobel边缘检测，本质上是大量、重复的像素级运算，如果完全采用上位机进行这些计算，外加后续需要进行的人工智能软件推理，对上位机的计算能力要求相对较高，在**低成本**下难以达到较低的推理**延迟**。
-    > **注意**：这里FPGA图像预处理引擎可以分布在多个十字路口，处理后的视频流数据送至同一上位机，若不进行预处理，上位机的计算能力几乎必然成为瓶颈
-2. **数据传输延迟与带宽压力**：未经处理的原始彩色视频数据量很大，从摄像头传输到上位机会**占用大量带宽**，并带来不可忽视的**延迟**，这同样不利于系统的实时响应。
+## Targets and Project Info
+- Target Toolchain: Vivado 2023.2
+- Target FPGA: Xilinx Artix-7 XC7A100T
+- Bitstream: `bitstream/ImageProcess.bit`
+- Simulation: `sim/` (includes Verilog TB and Python comparison/driver scripts)
+- PC Visualization: `pc_viewer/udp_binary_viewer.py`
 
-**本解决方案的优势：**
+## Quick Start
+Using the Xiaomeige ACX720-V3 series FPGA board as an example (if you're using a different FPGA, you may need to rewrite the constraints file before programming):
 
-采用FPGA进行图像预处理，结合上位机的YOLO人工智能软件推理，可以在相对**较低的成本**下实现**极低的处理延迟**，防止上位机的计算能力成为瓶颈，同时具备将FPGA图像预处理引擎分布式部署至多个红绿灯路口的**可拓展性**，可极大地**节约数据传输带宽**
+1) Program the bitstream in Vivado
+	- Directly program `bitstream/ImageProcess.bit`.
 
-### 后续的进一步计划
+2) Network connection and settings
+	- Connect the board and the PC via Ethernet cable.
+	- Set the PC NIC IPv4 address to `192.168.0.3`.
+	- Enable Jumbo Frames in the NIC properties.
 
-* 可以在FPGA硬件加速模块中进一步引入去雾、去雨等模块，以增强在不同天气条件下的识别能力
+3) Packet capture
+	- Use Wireshark to capture and verify the UDP/IPv4 traffic.
 
-### 技术细节
+4) PC-side visualization
+	- Go to `pc_viewer/`, install dependencies per its README, and run `udp_binary_viewer.py`.
+	- This will display the filtered binary image in real time on the PC.
 
-#### SOBEL边缘检测
+Optional (Windows PowerShell example):
 
-* **目的**是提取出视频图像的边缘特征，便于上位机进行快速推理
+```powershell
+cd pc_viewer
+python -m pip install -r requirements.txt
+python .\udp_binary_viewer.py
+```
 
-* **原因**是该算子较为常用，比较成熟，**效率较高**，且对**噪声容忍度较高**，适合本系统中的灰度渐变图像
+## Parameters
+- Frame size: 1280×720
+- Frame rate: 30 FPS
+- Protocol: UDP / IPv4
+- Transmission granularity: line-based; prepend a 2-byte line index to each line
+- Image preprocessing: fully pipelined (grayscale → median → Sobel)
 
-一种通过寻找**图像一阶梯度最大值**来检测边界的算法
+## Performance Evaluation
+- Bandwidth reduced to 1/24 of the original raw data.
+- Compared with an OpenCV-based software implementation, the hardware version reduces per-frame latency by about 12.74%–28.70%.
+  - Basis: Processing a single frame of 200×200 image, latency comparison between Google Colab (free version) and Xilinx Artix-7 XC7A100T FPGA (@100MHz).
+- Resource usage on the tested FPGA is under 10% for LUT/FF/LUTRAM, enabling low-cost, large-scale edge deployment potential.
 
-对灰度渐变和噪声较多的图像处理效果比较好，对边缘定位比较准确
+> See `results/` for examples and waveforms.
 
-SOBEL算子是一个离散的一阶差分算子，用来计算图像亮度函数的**一阶梯度近似值**
+## Algorithm Choices
 
-在图像的任何一点使用此算子，将会产生**该点对应的梯度**矢量
+### Median vs. Gaussian Filtering
+Common image noises:
+- Gaussian noise: continuous random noise following Gaussian distribution, introducing small random pixel perturbations;
+- Salt-and-pepper noise: discrete random white/black dots;
+- Uniform noise: reduces image contrast;
+- Ripple noise: periodic intensity variations.
 
-采用水平与竖直两个方向的尺寸为`3*3`的卷积核，与输入像素进行卷积，分别检测竖直与水平方向的边缘
+Filter characteristics:
+- Mean filter: linear; uses neighborhood mean; good for Gaussian/uniform noise but blurs details;
+- Gaussian filter: linear; weighted average (Gaussian weights); better on Gaussian noise and preserves details better than mean;
+- Median filter: non-linear; uses the median; very effective for salt-and-pepper noise and preserves edges/details.
 
-> 垂直方向的边缘在水平方向的梯度(偏导数)幅值较大
->
-> 水平方向的边缘在垂直方向的梯度(偏导数)幅值较大
+On FPGA:
+- Median requires many comparisons (higher resource usage) but preserves edges best;
+- Gaussian uses convolution for weighted average (lower compute) but more edge loss.
 
-在卷积结束后，得到水平与竖直两个方向的梯度$G_x, G_y$，随后，该点像素相对于邻近像素的近似梯度值即$G=\sqrt{G_x^2+G_y^2}$，这样便可将输入数据的特征提取出来了
+Since the system targets edge detection, we use median filtering to smooth noise while preserving edges. Though its suppression on Gaussian noise is not as strong and the resource cost is higher, measurements on Artix-7 show LUT/FF/LUTRAM usage below 10%, which is acceptable.
 
-> **二维离散卷积的规则**：矩阵元素对应相乘再相加，要求两个矩阵形状完全一致
+Salt-and-pepper noise tends to be detected as strong edges by edge detectors, so removing it first is reasonable (even if camera salt-and-pepper noise is typically less than Gaussian noise).
 
-#### 中值滤波
+Considering the threshold sensitivity of the Sobel operator, using median filtering helps with stable thresholding across day/night conditions by preserving edge characteristics.
 
-* **目的**是去除一定噪声，平滑边缘
+### Sobel vs. Canny
+Both are common edge detectors:
+- Sobel: lower computation; drawbacks include thicker edges and sensitivity to noise/thresholds;
+- Canny: Gaussian filtering + Sobel gradients + non-maximum suppression + double-thresholding + edge tracking; more complete edges, thinner and more accurate, but complex and compute-heavy.
 
-即采用一定的滤波窗口尺寸，在该窗口中，中心像素值应当为窗口中所有像素值的中值
+This project only needs relatively simple edge features (e.g., zebra crossings and e-bike contours). Precision requirements are moderate while compute constraints are tight, so we choose Sobel instead of Canny for better real-time performance and resource efficiency.
 
-在本系统中，输入为串行的像素流，要实现与周边像素的比较，需要进行像素的行缓存
+## Folders and Project Structure
+- `bitstream/`: prebuilt `.bit` and flashable `.bin` files.
+- `constrs/`: XDC constraints for FPGA IOs.
+- `pc_viewer/`: Python visualization script `udp_binary_viewer.py` (thanks to GPT5).
+- `results/`: test results and testbench outputs (figures/screenshots).
+- `sim/`: all files required by testbenches (Verilog TB, Python comparison/driver scripts, golden data, etc.).
+- `sources/`: core IPs and RTL files (e.g., `ImageProcess.v`) and project IP configurations.
 
-#### 彩色图像灰度化
-
-* **目的**是减少无关信息，同时降低数据大小，减轻后续图像传输带宽要求
-
-采用了平均值法与加权平均值法两种方法实现灰度滤波
-
-### 困难和解决办法
-
-#### 系统架构与硬件划分
-
-在系统设计过程中，遇到的最主要困难是**系统架构与软硬件划分**的确定
-
-其困难主要在于：
-
-* 此前**没有**相关软硬件结合检测电瓶车闯红灯的**先例**
-* 系统开发**成本**的折中：
-    > **将整个YOLO模型部署至FPGA**：硬件成本较高、开发难度较大、不适合大规模应用于实际场景
-* 系统**性能**的折中：
-    > **完全以软件形式进行目标检测**：延迟较高、对上位机硬件要求较高、大规模部署下成本较高，且数据传输带宽成本较高
-
-因此，需要考虑将部分计算分担至边缘端，采取“边缘端+云端”结合、软硬件结合的开发方式，实现了**成本与性能**的优化
-
-> **为何选择将这些模块硬件化？**
->
-> 因为这是在图像识别中常见的一些处理，将其硬件化后可以减轻上位机的计算负担
-
-#### 协同仿真
-
-还有一个困难是在Python-Verilog协同仿真过程中，如何利用Python软件代码实现行缓存（即如何实现**移位寄存器**）
-
-**解决办法**：引入`collections.deque`，利用其双端队列的特性，模拟移位寄存器的功能
-
-### 模块划分
-
-* 软件端
-* 硬件端
-  * 视频流输入模块
-  * 图像滤波模块
-    * 彩色图像灰度化
-    * 中值滤波
-    * SOBEL边缘检测
-  * 与上位机通信模块：拟采用以太网通信
-  * 时钟产生模块
-
-### 如何与上位机通信：采用何种通信协议
-
-由于该项目的输入视频流在经过三大图像预处理模块后，变为了二值黑白数据输出，因此**位宽**较小
-
-假如输入视频尺寸为`200*200`，则每帧数据量为`200*200*1bits = 40,000bits = 40kb`
-
-在一般情况下，道路监控系统要求`30FPS`帧速率，因此，其传输**带宽**为
-* `@30FPS: 40kb/frame * 30fps = 1.2Mbps`
-* `@60FPS: 40kb/frame * 60fps = 2.4Mbps`
-
-对于UART串口，其通常最高传输带宽为`115,200bps = 0.1152Mbps`，显然无法采用，尽管其实现较为简单
-
-对于USB，其带宽很高，但不适合远距离传输，也难以拓展，与工程实际不符合
-
-而以太网天然具备较高的传输带宽，并且具备**可拓展**属性，这与本项目以及实际的交通监控场景非常吻合，因此，采用**以太网**进行数据传输
+```
+ImageProcessBasedOnFPGA
+├─ bitstream/
+├─ constrs/
+├─ pc_viewer/
+├─ results/
+├─ sim/
+├─ sources/
+└─ ov5640/
+```
