@@ -18,6 +18,7 @@ English | [简体中文](./README_SC.md)
 
 ## Table of Contents
 - [FPGA-based Image Preprocessing and Ethernet Transmission System](#fpga-based-image-preprocessing-and-ethernet-transmission-system)
+  - [Showcase](#showcase)
   - [Table of Contents](#table-of-contents)
   - [Use Cases](#use-cases)
   - [Key Advantages](#key-advantages)
@@ -63,6 +64,8 @@ Using the Xiaomeige ACX720-V3 series FPGA board as an example (if you're using a
 4) PC-side visualization
 	- Go to `pc_viewer/`, install dependencies per its README, and run `udp_binary_viewer.py`.
 	- This will display the filtered binary image in real time on the PC.
+	- **You can reset using the S4 button on the FPGA board.**
+    - **You can adjust the Sobel edge detection threshold up/down using the S3/S2 buttons on the FPGA board for accurate edge capture.**
 
 Optional (Windows PowerShell example):
 
